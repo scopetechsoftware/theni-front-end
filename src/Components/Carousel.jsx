@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./head.css"
 const api = "http://localhost:4000";
 export default function Carousel({ item }) {
   const carouselRef = useRef(null);
@@ -124,104 +125,57 @@ export default function Carousel({ item }) {
 
   return (
     <>
-      <style>{`
-        * { box-sizing: border-box; }
-        .carousel-wrapper {
-          position: relative;
-          max-width: 80%;
-          margin: 2rem auto;
-          user-select: none;
-        }
-        .carousel {
-          display: grid;
-          grid-auto-flow: column;
-          grid-auto-columns: calc((100% - 16px) / 2);
-          gap: 16px;
-          overflow-x: auto;
-          scroll-behavior: smooth;
-          scroll-snap-type: x mandatory;
-          scrollbar-width: none;
-          padding-bottom: 12px;
-        }
-        .carousel.no-transition { scroll-behavior: auto !important; }
-        .carousel::-webkit-scrollbar { display: none; }
-        .card {
-          background: #fff;
-          border-radius: 15px;
-          scroll-snap-align: start;
-          padding: 20px;
-          cursor: grab;
-          max-height: fit-content;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(2, 12, 21, 0.3);
-          transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        
-        .card-title { font-size: 1.2rem; font-weight: bold; color: #00488E; margin-bottom: 0.5rem; }
-        .card-desc { color: #333; font-size: 0.95rem; line-height: 1.4; }
-        .card-image { margin-top: 1rem; flex-shrink:0; border-radius: 12px; overflow: hidden; height: 40px; width: 40px; border-radius: 50%; }
-        .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .card:hover .card-image img { transform: scale(1.05); }
-        .arrow-btn {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          background: #00488E;
-          border: none;
-          color: #fff;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          cursor: pointer;
-          font-size: 24px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 10;
-          transition: 0.3s;
-        }
-        .arrow-btn:hover { background: #F7A800; }
-        .arrow-left { left: -20px; }
-        .arrow-right { right: -20px; }
-        @media (max-width: 768px) {
-          .carousel { grid-auto-columns: 100%; }
-          .arrow-btn { display: none; }
-        }
-      `}</style>
+       
 
       <div className="carousel-wrapper" onMouseEnter={() => clearInterval(timeoutRef.current)} onMouseLeave={autoPlay}>
-        <button className="arrow-btn arrow-left" onClick={scrollLeftFunc}>&#8249;</button>
+        <button className="arrow-btn arrow-left" onClick={scrollLeftFunc} aria-label="Previous slide">&#8249;</button>
         <div
           className="carousel"
           ref={carouselRef}
           onScroll={handleScroll}
         >
           {item && item.filter((_, i) => _.category === 'slider').reverse().slice().map(({ _id, slider }) => {
-            
-         
-           const  fixed_path = slider.logoImage?.replace("\\", "/");
-           
-            return(
-            
-            <div className="card" key={_id}>
-              <div>
-                <div className="card-image">
-                  <img src={`${api}/${fixed_path}`} alt={slider.title} />
+            const fixed_path = slider.logoImage?.replace("\\", "/");
+
+            return (
+              <div className="card" key={_id}>
+                <div className="card-content">
+                  <div className="card-header">
+                    <div className="card-image">
+                      <img src={`${api}/${fixed_path}`} alt={slider.title} />
+                    </div>
+                    <div className="card-text">
+                      <h3 className="card-title">{slider.title}</h3>
+                    </div>
+                  </div>
+                  <p className="card-desc">{slider.content}</p>
+                  <div className="card-button">
+                    <button style={{
+                      background: slider.buttonBackgroundColor,
+                      padding: '12px 25px',
+                      borderRadius: '8px',
+                      outline: 0,
+                      border: 0,
+                      boxShadow: `0 4px 10px ${toRgba(slider.buttonBackgroundColor)}`,
+                      fontWeight: '600',
+                      fontSize: '1rem',
+                      transition: 'all 0.3s ease'
+                    }}>
+                      <Link to={slider.url} style={{ color: slider.buttonColor, textDecoration: 'none' }}>{slider.buttonName}</Link>
+                    </button>
+                  </div>
                 </div>
-                <h3 className="card-title">{slider.title}</h3>
-                <p className="card-desc">{slider.content}</p>
               </div>
-              <button style={{ background: slider.buttonBackgroundColor, width: 'fit-content', padding: '10px 20px', borderRadius: '5px', outline: 0, border: 0, boxShadow: `2px 3px 5px ${toRgba(slider.buttonBackgroundColor)}` }}>
-                <Link to={slider.url} style={{ color: slider.buttonColor, textDecoration: 'none' }}>{slider.buttonName}</Link>
-              </button>
-            </div>
-          )})}
+            )
+          })}
         </div>
-        <button className="arrow-btn arrow-right" onClick={scrollRightFunc}>&#8250;</button>
+        <button className="arrow-btn arrow-right" onClick={scrollRightFunc} aria-label="Next slide">&#8250;</button>
+
+        {/* <div className="carousel-indicators">
+          {item && item.filter((_, i) => _.category === 'slider').map((_, index) => (
+            <div key={index} className={`indicator ${index === 0 ? 'active' : ''}`}></div>
+          ))}
+        </div> */}
       </div>
     </>
   );
